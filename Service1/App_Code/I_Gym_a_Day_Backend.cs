@@ -1,4 +1,5 @@
-﻿using System;
+//Login/Register interface 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -14,7 +15,7 @@ using System.Text;
         [OperationContract]
         int UserRegister(string userName, string userSurname, string userEmail, string userPhoneNo, string gender, string userPassword);
         [OperationContract]
-         string Login(string userEmail, string userPassword);
+        string Login(string userEmail, string userPassword);
 
     }
 
