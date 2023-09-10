@@ -17,22 +17,19 @@ using System.Security.Cryptography;
          int I_Gym_a_Day_Backend.UserRegister(string userName, string userSurname, string userEmail, string userPhoneNo, string gender, string userPassword)
          {
 
-            //Check if email already exists in the db
-            if (!emailExists(userEmail))
-            {
-            //if email does NOT exist create new user
-
+            //Check if email already exists in the db.
+            if (!emailExists(userEmail)) {
+            //If email does NOT exist, create new user
                 var userType = "";
+                
                 if (userEmail.EndsWith("@admin.com")) {
                     userType = "Admin";
                 }
-                else
-                {
+                else {
                     userType = "Customer";
                 }
-
-                var newUser = new UserTable
-                {
+                
+                var newUser = new UserTable {
                     U_Name = userName,
                     U_Surname = userSurname,
                     Email = userEmail,
@@ -41,33 +38,25 @@ using System.Security.Cryptography;
                     Password = ToSHA256(userPassword),
                     Type = userType
                 };
-
-
-
-
-
-
+                  
                 db.UserTables.InsertOnSubmit(newUser);
 
-                    try
-                    {
-                        db.SubmitChanges();
-                        //successful registration 
-                        return 1;
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.GetBaseException();
-                        //Exception occured
-                        return -1;
-                    }
+                try {
+                     db.SubmitChanges();
+                     //successful registration 
+                     return 1;
+                }
+                catch (Exception ex){
+                     ex.GetBaseException();
+                     //Exception occured
+                     return -1;
+                }
 
-            }
-            else
-            {
-                //email already exists
-                return 0;
-            }
+               }
+               else{
+                  //email already exists
+                  return 0;
+               }
 
             
 
@@ -77,17 +66,19 @@ using System.Security.Cryptography;
         //LOGIN FUNCTION
         string I_Gym_a_Day_Backend.Login(string userEmail, string userPassword)
         {
-
+         //Comparison being made between user input and db data
             var sysUser = (from s in db.UserTables
                            where s.Email.Equals(userEmail) && s.Password.Equals(ToSHA256(userPassword))
                            select s).FirstOrDefault();
 
             if(sysUser != null)
             {
+            //if a match occurs
                 return sysUser.Type;
             }
             else
             {
+            //if no match occurs
                 return null;
             }
 
@@ -108,7 +99,7 @@ using System.Security.Cryptography;
             return stringBuilder.ToString();
         }
 
-        //return true if email exists, else false
+        //return true if email exists, else return false
         bool emailExists(string userEmail)
         {
             var sysUser = (from s in db.UserTables
