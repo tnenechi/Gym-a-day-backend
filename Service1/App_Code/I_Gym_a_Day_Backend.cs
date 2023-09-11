@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -15,6 +16,13 @@ using System.Text;
         int UserRegister(string userName, string userSurname, string userEmail, string userPhoneNo, string gender, string userPassword);
         [OperationContract]
          string Login(string userEmail, string userPassword);
+        [OperationContract]
+        int AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription);
+        [OperationContract]
+        IQueryable<Product> GetProducts();
+
+        [OperationContract]
+        Product GetAProduct(int id);
 
     }
 

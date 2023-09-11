@@ -5,10 +5,9 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using System.Security.Cryptography;
+using System.Data;
 
-
-
-   public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
+public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
     {
         DataClassesDataContext db = new DataClassesDataContext();
 
@@ -18,7 +17,7 @@ using System.Security.Cryptography;
          {
 
             //Check if email already exists in the db
-            if (!emailExists(userEmail))
+            if (!EmailExists(userEmail))
             {
             //if email does NOT exist create new user
 
@@ -73,6 +72,8 @@ using System.Security.Cryptography;
 
             
          }
+           //END REGISTER FUNCTION
+
 
         //LOGIN FUNCTION
         string I_Gym_a_Day_Backend.Login(string userEmail, string userPassword)
@@ -92,8 +93,10 @@ using System.Security.Cryptography;
             }
 
         }
+          //END LOGIN FUNCTION
 
-        // SHA256 Hashing algorithm function
+
+        // SHA256 HASHING ALGORITHM FUNCTION
         public static string ToSHA256(string password)
         {
             var sha256 = SHA256.Create();
@@ -107,23 +110,80 @@ using System.Security.Cryptography;
 
             return stringBuilder.ToString();
         }
+        //END SHA256 FUNCTION
 
-        //return true if email exists, else false
-        bool emailExists(string userEmail)
+
+
+        //EMAILEXISTS FUNCTION: returns true if email exists, else false
+        bool EmailExists(string userEmail)
         {
-            var sysUser = (from s in db.UserTables
-                       where s.Email.Equals(userEmail)
-                       select s).FirstOrDefault();
+                var sysUser = (from s in db.UserTables
+                           where s.Email.Equals(userEmail)
+                           select s).FirstOrDefault();
 
-            if(sysUser != null)
-            {
-                //then the email already exists in the db
-                return true;
-            }
+                if(sysUser != null)
+                {
+                    //then the email already exists in the db
+                    return true;
+                }
 
-            return false;
+                return false;
         }
+        //END EMAILEXISTS FUNCTION
+
+
+        
+        //PRODUCT ADDITION FUNCTION
+        int I_Gym_a_Day_Backend.AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription)
+        {
+            var aNewProduct = new Product
+            {
+                Prod_Img_Path = imgPath,
+                Prod_Name = prodName,
+                Prod_Price = decimal.Parse(prodPrice),
+                Prod_Description = prodDescription
+            };
+
+            db.Products.InsertOnSubmit(aNewProduct);
+
+
+             try
+             {
+                db.SubmitChanges();
+                //successful addition 
+                return 1;
+             }
+            catch (Exception ex)
+             {
+                ex.GetBaseException();
+                //Exception occured
+                return -1;
+             }
+
+        }
+            //END PRODUCT ADDITION FUNCTION
+
+
+        //Method to return all from the product table
+        IQueryable<Product> I_Gym_a_Day_Backend.GetProducts()
+        {
+            IQueryable<Product> toReturn = from s in db.Products select s;
+            return toReturn;
+        }
+
+
+
+    Product I_Gym_a_Day_Backend.GetAProduct(int id)
+    {
+        var AProduct = (from p in db.Products
+                       where p.Prod_Id.Equals(id)
+                       select p).FirstOrDefault();
+
+        return AProduct;
     }
+
+
+}
 
 // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "Service2" in code, svc and config file together.
 
