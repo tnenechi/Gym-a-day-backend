@@ -134,14 +134,15 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
 
         
         //PRODUCT ADDITION FUNCTION
-        int I_Gym_a_Day_Backend.AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription)
+        int I_Gym_a_Day_Backend.AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription, int quantity)
         {
             var aNewProduct = new Product
             {
                 Prod_Img_Path = imgPath,
                 Prod_Name = prodName,
                 Prod_Price = decimal.Parse(prodPrice),
-                Prod_Description = prodDescription
+                Prod_Description = prodDescription,
+                Prod_Qty = quantity
             };
 
             db.Products.InsertOnSubmit(aNewProduct);

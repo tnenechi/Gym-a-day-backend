@@ -17,7 +17,7 @@ using System.Text;
         [OperationContract]
          string Login(string userEmail, string userPassword);
         [OperationContract]
-        int AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription);
+        int AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription, int quantity);
         [OperationContract]
         IQueryable<Product> GetProducts();
 
