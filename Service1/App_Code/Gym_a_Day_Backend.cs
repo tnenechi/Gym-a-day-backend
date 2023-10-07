@@ -13,13 +13,13 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
 
 
         //REGISTER FUNCTION
-         int I_Gym_a_Day_Backend.UserRegister(string userName, string userSurname, string userEmail, string userPhoneNo, string gender, string userPassword)
+         public int UserRegister(string userName, string userSurname, string userEmail, string userPhoneNo, string gender, string userPassword)
          {
 
             //Check if email already exists in the db
             if (!EmailExists(userEmail))
             {
-            //if email does NOT exist create new user
+                //if email does NOT exist create new user
 
                 var userType = "";
                 if (userEmail.EndsWith("@admin.com")) {
@@ -72,11 +72,11 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
 
             
          }
-           //END REGISTER FUNCTION
+     
 
 
-        //LOGIN FUNCTION
-        string I_Gym_a_Day_Backend.Login(string userEmail, string userPassword)
+        //LOGIN FUNCTION - returns ID else 0 if details incorrect
+        public int Login(string userEmail, string userPassword)
         {
 
             var sysUser = (from s in db.UserTables
@@ -85,56 +85,52 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
 
             if(sysUser != null)
             {
-                return sysUser.Type;
+                return sysUser.ID;
+            }
+            else
+            {
+                return 0;
+            }
+
+        }
+
+
+        //GET USER TYPE FUNCTION - returns the usertype
+        public string GetUserType(int ID)
+        {
+            var theUser = GetUser(ID);
+
+            if(theUser != null)
+            {
+                return theUser.Type;
             }
             else
             {
                 return null;
             }
-
         }
-          //END LOGIN FUNCTION
 
 
-        // SHA256 HASHING ALGORITHM FUNCTION
-        public static string ToSHA256(string password)
+        //GET USER TYPE FUNCTION - returns the user first name
+        public string GetUserFirstname(int ID)
         {
-            var sha256 = SHA256.Create();
-            byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            var theUser = GetUser(ID);
 
-            var stringBuilder = new StringBuilder();
-            for(int i = 0; i < bytes.Length;i++)
+            if (theUser != null)
             {
-                stringBuilder.Append(bytes[i].ToString("x2"));
+                return theUser.U_Name;
             }
-
-            return stringBuilder.ToString();
+            else
+            {
+                return null;
+            }
         }
-        //END SHA256 FUNCTION
 
 
 
-        //EMAILEXISTS FUNCTION: returns true if email exists, else false
-        bool EmailExists(string userEmail)
-        {
-                var sysUser = (from s in db.UserTables
-                           where s.Email.Equals(userEmail)
-                           select s).FirstOrDefault();
 
-                if(sysUser != null)
-                {
-                    //then the email already exists in the db
-                    return true;
-                }
-
-                return false;
-        }
-        //END EMAILEXISTS FUNCTION
-
-
-        
         //PRODUCT ADDITION FUNCTION
-        int I_Gym_a_Day_Backend.AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription, int quantity)
+        public bool AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription, int quantity)
         {
             var aNewProduct = new Product
             {
@@ -142,7 +138,8 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
                 Prod_Name = prodName,
                 Prod_Price = decimal.Parse(prodPrice),
                 Prod_Description = prodDescription,
-                Prod_Qty = quantity
+                Prod_Qty = quantity,
+                Active = 1
             };
 
             db.Products.InsertOnSubmit(aNewProduct);
@@ -152,39 +149,207 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
              {
                 db.SubmitChanges();
                 //successful addition 
-                return 1;
+                return true;
              }
             catch (Exception ex)
              {
                 ex.GetBaseException();
                 //Exception occured
-                return -1;
+                return false;
              }
 
         }
-            //END PRODUCT ADDITION FUNCTION
+ 
 
 
-        //Method to return all from the product table
-        IQueryable<Product> I_Gym_a_Day_Backend.GetProducts()
+
+        //EDIT PRODUCT Fucntion - returns 1 if successfull, 0 if product ID does not exist, -1 if an error occured
+        public int EditProduct(int ID, string prodName, string prodPrice, String prodDescription, int quantity)
         {
-            IQueryable<Product> toReturn = from s in db.Products select s;
-            return toReturn;
+            var theProduct = GetAProduct(ID);
+
+            if(theProduct != null)
+            {
+                theProduct.Prod_Name = prodName;
+                theProduct.Prod_Name = prodPrice;
+                theProduct.Prod_Description = prodDescription;
+                theProduct.Prod_Qty = quantity;
+
+                try
+                {
+                    db.SubmitChanges();
+                    return 1;
+                }catch(Exception e)
+                {
+                    e.GetBaseException();
+                    return -1;
+                }
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+
+        public bool DecreaseProductQty(int ID, int quantityBought)
+        {
+            var theProduct = GetAProduct(ID);
+
+            if(theProduct != null)
+            {
+                theProduct.Prod_Qty -= quantityBought;
+                
+                if(theProduct.Prod_Qty == 0)
+                {
+                    theProduct.Active = 0;
+                }
+
+                try
+                {
+                    db.SubmitChanges();
+                    return true;
+                }catch(Exception e)
+                {
+                    e.GetBaseException();
+                }
+            }
+
+            return false;
         }
 
 
 
-    Product I_Gym_a_Day_Backend.GetAProduct(int id)
-    {
-        var AProduct = (from p in db.Products
-                       where p.Prod_Id.Equals(id)
-                       select p).FirstOrDefault();
 
-        return AProduct;
+    public int GetProductQty(int ID)
+    {
+        var theProduct = GetAProduct(ID);
+
+        if(theProduct != null)
+        {
+            return theProduct.Prod_Qty;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+        //DELETE PRODUCT Fucntion - returns 1 if successfull, 0 if product ID does not exist, -1 if an error occured
+    public int DeleteProduct(int ID)
+           {
+                var theProduct = GetAProduct(ID);
+
+                if (theProduct != null)
+                {
+                    theProduct.Active = 0;
+
+                    try
+                    {
+                        db.SubmitChanges();
+                        return 1;
+                    }
+                    catch (Exception e)
+                    {
+                        e.GetBaseException();
+                        return -1;
+                    }
+                }
+                else
+                {
+                    return 0;
+                }
+        }
+
+
+        //Method to return all from the product table
+        public List<Product> GetProducts()
+    {
+            dynamic allProducts = (from s in db.Products select s);
+
+            List<Product> listToReturn = new List<Product>();
+
+            if(allProducts != null)
+            {
+                foreach(Product aProduct in allProducts)
+                {
+                    var toAdd = new Product
+                    {
+                        Prod_Id = aProduct.Prod_Id,
+                        Prod_Img_Path = aProduct.Prod_Img_Path,
+                        Prod_Name = aProduct.Prod_Name,
+                        Prod_Price = aProduct.Prod_Price
+                    };
+
+                    listToReturn.Add(toAdd);
+                }
+            }
+
+            return listToReturn;
+
     }
 
 
+        //Method to get a specific product
+        public Product GetAProduct(int id)
+        {
+            var AProduct = (from p in db.Products
+                            where (p.Prod_Id.Equals(id)) && (p.Active == 1)
+                            select p).FirstOrDefault();
+
+            return AProduct;
+        }
+
+
+
+
+    //***** HELPER METHODS BELOW ******
+
+
+
+
+    //returns the user with the id
+    private UserTable GetUser(int id)
+    {
+        var toReturn = (from u in db.UserTables
+                        where u.ID == id
+                        select u).FirstOrDefault();
+        return toReturn;
+    }
+       
+    //returns the hashed password
+        private static string ToSHA256(string password)
+        {
+            var sha256 = SHA256.Create();
+            byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+            var stringBuilder = new StringBuilder();
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                stringBuilder.Append(bytes[i].ToString("x2"));
+            }
+
+            return stringBuilder.ToString();
+        }
+
+
+
+      //returns true if email exists in userTable else false
+        private bool EmailExists(string userEmail)
+        {
+            var sysUser = (from s in db.UserTables
+                           where s.Email.Equals(userEmail)
+                           select s).FirstOrDefault();
+
+            if (sysUser != null)
+            {
+                //then the email already exists in the db
+                return true;
+            }
+
+            return false;
+        }
+
 }
 
-// NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "Service2" in code, svc and config file together.
 

@@ -1,10 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?><Database Name="Database" Class="DataClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="WebSettings" ConnectionString="Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database.mdf;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="DatabaseConnectionString" Provider="System.Data.SqlClient" />
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="Database2" Class="DataClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database2.mdf;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="Database2ConnectionString" Provider="System.Data.SqlClient" />
   <Table Name="dbo.UserTable" Member="UserTables">
     <Type Name="UserTable">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="U_Name" Type="System.String" DbType="VarChar(255) NOT NULL" CanBeNull="false" />
       <Column Name="U_Surname" Type="System.String" DbType="VarChar(255) NOT NULL" CanBeNull="false" />
-      <Column Name="Email" Type="System.String" DbType="VarChar(255) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Email" Type="System.String" DbType="VarChar(255) NOT NULL" CanBeNull="false" />
       <Column Name="Phone" Type="System.String" DbType="VarChar(12) NOT NULL" CanBeNull="false" />
       <Column Name="Gender" Type="System.String" DbType="VarChar(10) NOT NULL" CanBeNull="false" />
       <Column Name="Password" Type="System.String" DbType="VarChar(MAX) NOT NULL" CanBeNull="false" />
@@ -16,9 +17,10 @@
       <Column Name="Prod_Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="Prod_Img_Path" Type="System.String" DbType="VarChar(255) NOT NULL" CanBeNull="false" />
       <Column Name="Prod_Name" Type="System.String" DbType="VarChar(255) NOT NULL" CanBeNull="false" />
-      <Column Name="Prod_Price" Type="System.Decimal" DbType="Decimal(5,2) NOT NULL" CanBeNull="false" />
+      <Column Name="Prod_Price" Type="System.Decimal" DbType="Decimal(6,2) NOT NULL" CanBeNull="false" />
       <Column Name="Prod_Description" Type="System.String" DbType="VarChar(MAX) NOT NULL" CanBeNull="false" />
       <Column Name="Prod_Qty" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Active" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
     </Type>
   </Table>
 </Database>

@@ -21,7 +21,7 @@ using System.Reflection;
 
 
 
-[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="Database")]
+[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="Database2")]
 public partial class DataClassesDataContext : System.Data.Linq.DataContext
 {
 	
@@ -38,7 +38,7 @@ public partial class DataClassesDataContext : System.Data.Linq.DataContext
   #endregion
 	
 	public DataClassesDataContext() : 
-			base(global::System.Configuration.ConfigurationManager.ConnectionStrings["DatabaseConnectionString"].ConnectionString, mappingSource)
+			base(global::System.Configuration.ConfigurationManager.ConnectionStrings["Database2ConnectionString"].ConnectionString, mappingSource)
 	{
 		OnCreated();
 	}
@@ -90,6 +90,8 @@ public partial class UserTable : INotifyPropertyChanging, INotifyPropertyChanged
 	
 	private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 	
+	private int _ID;
+	
 	private string _U_Name;
 	
 	private string _U_Surname;
@@ -108,6 +110,8 @@ public partial class UserTable : INotifyPropertyChanging, INotifyPropertyChanged
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
     partial void OnCreated();
+    partial void OnIDChanging(int value);
+    partial void OnIDChanged();
     partial void OnU_NameChanging(string value);
     partial void OnU_NameChanged();
     partial void OnU_SurnameChanging(string value);
@@ -127,6 +131,26 @@ public partial class UserTable : INotifyPropertyChanging, INotifyPropertyChanged
 	public UserTable()
 	{
 		OnCreated();
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+	public int ID
+	{
+		get
+		{
+			return this._ID;
+		}
+		set
+		{
+			if ((this._ID != value))
+			{
+				this.OnIDChanging(value);
+				this.SendPropertyChanging();
+				this._ID = value;
+				this.SendPropertyChanged("ID");
+				this.OnIDChanged();
+			}
+		}
 	}
 	
 	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_U_Name", DbType="VarChar(255) NOT NULL", CanBeNull=false)]
@@ -169,7 +193,7 @@ public partial class UserTable : INotifyPropertyChanging, INotifyPropertyChanged
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Email", DbType="VarChar(255) NOT NULL", CanBeNull=false, IsPrimaryKey=true)]
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Email", DbType="VarChar(255) NOT NULL", CanBeNull=false)]
 	public string Email
 	{
 		get
@@ -308,6 +332,8 @@ public partial class Product : INotifyPropertyChanging, INotifyPropertyChanged
 	
 	private int _Prod_Qty;
 	
+	private int _Active;
+	
     #region Extensibility Method Definitions
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -324,6 +350,8 @@ public partial class Product : INotifyPropertyChanging, INotifyPropertyChanged
     partial void OnProd_DescriptionChanged();
     partial void OnProd_QtyChanging(int value);
     partial void OnProd_QtyChanged();
+    partial void OnActiveChanging(int value);
+    partial void OnActiveChanged();
     #endregion
 	
 	public Product()
@@ -391,7 +419,7 @@ public partial class Product : INotifyPropertyChanging, INotifyPropertyChanged
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Price", DbType="Decimal(5,2) NOT NULL")]
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Price", DbType="Decimal(6,2) NOT NULL")]
 	public decimal Prod_Price
 	{
 		get
@@ -447,6 +475,26 @@ public partial class Product : INotifyPropertyChanging, INotifyPropertyChanged
 				this._Prod_Qty = value;
 				this.SendPropertyChanged("Prod_Qty");
 				this.OnProd_QtyChanged();
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Active", DbType="Int NOT NULL")]
+	public int Active
+	{
+		get
+		{
+			return this._Active;
+		}
+		set
+		{
+			if ((this._Active != value))
+			{
+				this.OnActiveChanging(value);
+				this.SendPropertyChanging();
+				this._Active = value;
+				this.SendPropertyChanged("Active");
+				this.OnActiveChanged();
 			}
 		}
 	}

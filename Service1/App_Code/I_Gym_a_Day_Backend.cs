@@ -15,11 +15,30 @@ using System.Text;
         [OperationContract]
         int UserRegister(string userName, string userSurname, string userEmail, string userPhoneNo, string gender, string userPassword);
         [OperationContract]
-         string Login(string userEmail, string userPassword);
+         int Login(string userEmail, string userPassword);
         [OperationContract]
-        int AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription, int quantity);
+        string GetUserType(int ID);
+
         [OperationContract]
-        IQueryable<Product> GetProducts();
+        string GetUserFirstname(int ID);
+
+        [OperationContract]
+        bool AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription, int quantity);
+
+        [OperationContract]
+        int EditProduct(int ID, string prodName, string prodPrice, String prodDescription, int quantity);
+
+        [OperationContract]
+        bool DecreaseProductQty(int ID, int quantityBought);
+
+        [OperationContract]
+        int GetProductQty(int ID);
+
+        [OperationContract]
+        int DeleteProduct(int ID);
+
+        [OperationContract]
+        List<Product> GetProducts();
 
         [OperationContract]
         Product GetAProduct(int id);
