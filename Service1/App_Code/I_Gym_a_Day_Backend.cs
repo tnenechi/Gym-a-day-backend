@@ -43,6 +43,14 @@ using System.Text;
         [OperationContract]
         Product GetAProduct(int id);
 
+        [OperationContract]
+        bool CreateInvoice(int userId, Dictionary<int, int> prodIdQty, decimal totalAmountSpent, DateTime purchaseDate);
+
+        [OperationContract]
+        List<Object> GetInvoices(int userId);
+
+
+
     }
 
 

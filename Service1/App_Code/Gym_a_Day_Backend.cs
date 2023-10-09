@@ -10,7 +10,7 @@ using System.Data;
 public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
     {
         DataClassesDataContext db = new DataClassesDataContext();
-
+        private static int invoiceNum;
 
         //REGISTER FUNCTION
          public int UserRegister(string userName, string userSurname, string userEmail, string userPhoneNo, string gender, string userPassword)
@@ -303,8 +303,122 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
 
 
 
-    //***** HELPER METHODS BELOW ******
 
+    //Method to add to the invoice table
+    public bool CreateInvoice(int userId, Dictionary<int, int> prodIdQty, decimal totalAmountSpent, DateTime purchaseDate)
+    {
+        var anInvoice = new Invoice
+        {
+            InvoiceID = ++invoiceNum,
+            UserID = userId,
+            PurchaseDate = purchaseDate,
+            TotalPrice = totalAmountSpent
+        };
+
+       
+
+        db.Invoices.InsertOnSubmit(anInvoice);
+
+        try
+        {
+            db.SubmitChanges();
+
+
+            //create the prodIDQtyBought Table for this invoice
+
+            bool isCreated = CreateProdIdQty(anInvoice.InvoiceID, prodIdQty);
+
+
+            return isCreated;
+        }
+        catch (Exception e)
+        {
+            e.GetBaseException();
+            return false;
+        }
+    }
+
+
+
+    public List<Object> GetInvoices(int userID)
+    {
+        dynamic userInvoices = (from i in db.Invoices
+                               where (i.UserID == userID)
+                               select i).DefaultIfEmpty();
+
+        List<Object> listToReturn = new List<Object>();
+
+        Dictionary<int, int> prodIDQty = new Dictionary<int, int>();
+
+        foreach(Invoice anInvoice in userInvoices)
+        {
+            //get every product-quantity pair in that particular invoice
+            int invoiceId = anInvoice.InvoiceID;
+            prodIDQty = GetInvoiceProductQty(invoiceId);
+
+            var toReturn = new
+            {
+                InvoiceId = invoiceId,
+                DOP = anInvoice.PurchaseDate,
+                TotalPrice = anInvoice.TotalPrice,
+                productsQty = prodIDQty
+            };
+
+            listToReturn.Add(toReturn);
+        }
+
+        return listToReturn;
+    }
+
+
+    //***** HELPER METHODS BELOW ******
+    private Dictionary<int, int > GetInvoiceProductQty(int invoiceId)
+    {
+        Dictionary<int, int> toReturn = new Dictionary<int, int>();
+        dynamic rows = (from p in db.ProdIDQtyBoughts
+                           where (p.InvoiceID == invoiceId)
+                           select p).DefaultIfEmpty();
+
+        if(rows != null)
+        {
+            foreach (ProdIDQtyBought aRow in rows)
+            {
+                toReturn.Add(aRow.ProductID, aRow.QuantityBought);
+            }
+            return toReturn;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    private bool CreateProdIdQty(int invoiceId, Dictionary<int, int> idQtyDictionary)
+    {
+        foreach(KeyValuePair<int, int> anEntry in idQtyDictionary)
+        {
+            var aPurchase = new ProdIDQtyBought
+            {
+                InvoiceID = invoiceId,
+                ProductID = anEntry.Key,
+                QuantityBought = anEntry.Value
+            };
+
+            db.ProdIDQtyBoughts.InsertOnSubmit(aPurchase);
+
+            try
+            {
+                db.SubmitChanges();
+                return true;
+            }
+            catch(Exception e)
+            {
+                e.GetBaseException();
+            }
+        }
+
+        return false;
+    }
 
 
 

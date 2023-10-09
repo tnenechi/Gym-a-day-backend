@@ -35,6 +35,9 @@ public partial class DataClassesDataContext : System.Data.Linq.DataContext
   partial void InsertProduct(Product instance);
   partial void UpdateProduct(Product instance);
   partial void DeleteProduct(Product instance);
+  partial void InsertInvoice(Invoice instance);
+  partial void UpdateInvoice(Invoice instance);
+  partial void DeleteInvoice(Invoice instance);
   #endregion
 	
 	public DataClassesDataContext() : 
@@ -82,6 +85,22 @@ public partial class DataClassesDataContext : System.Data.Linq.DataContext
 			return this.GetTable<Product>();
 		}
 	}
+	
+	public System.Data.Linq.Table<Invoice> Invoices
+	{
+		get
+		{
+			return this.GetTable<Invoice>();
+		}
+	}
+	
+	public System.Data.Linq.Table<ProdIDQtyBought> ProdIDQtyBoughts
+	{
+		get
+		{
+			return this.GetTable<ProdIDQtyBought>();
+		}
+	}
 }
 
 [global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.UserTable")]
@@ -105,6 +124,8 @@ public partial class UserTable : INotifyPropertyChanging, INotifyPropertyChanged
 	private string _Password;
 	
 	private string _Type;
+	
+	private EntitySet<Invoice> _Invoices;
 	
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -130,6 +151,7 @@ public partial class UserTable : INotifyPropertyChanging, INotifyPropertyChanged
 	
 	public UserTable()
 	{
+		this._Invoices = new EntitySet<Invoice>(new Action<Invoice>(this.attach_Invoices), new Action<Invoice>(this.detach_Invoices));
 		OnCreated();
 	}
 	
@@ -293,6 +315,19 @@ public partial class UserTable : INotifyPropertyChanging, INotifyPropertyChanged
 		}
 	}
 	
+	[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UserTable_Invoice", Storage="_Invoices", ThisKey="ID", OtherKey="UserID")]
+	public EntitySet<Invoice> Invoices
+	{
+		get
+		{
+			return this._Invoices;
+		}
+		set
+		{
+			this._Invoices.Assign(value);
+		}
+	}
+	
 	public event PropertyChangingEventHandler PropertyChanging;
 	
 	public event PropertyChangedEventHandler PropertyChanged;
@@ -311,6 +346,18 @@ public partial class UserTable : INotifyPropertyChanging, INotifyPropertyChanged
 		{
 			this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 		}
+	}
+	
+	private void attach_Invoices(Invoice entity)
+	{
+		this.SendPropertyChanging();
+		entity.UserTable = this;
+	}
+	
+	private void detach_Invoices(Invoice entity)
+	{
+		this.SendPropertyChanging();
+		entity.UserTable = null;
 	}
 }
 
@@ -516,6 +563,244 @@ public partial class Product : INotifyPropertyChanging, INotifyPropertyChanged
 		if ((this.PropertyChanged != null))
 		{
 			this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+	}
+}
+
+[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Invoice")]
+public partial class Invoice : INotifyPropertyChanging, INotifyPropertyChanged
+{
+	
+	private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+	
+	private int _InvoiceID;
+	
+	private int _UserID;
+	
+	private System.DateTime _PurchaseDate;
+	
+	private decimal _TotalPrice;
+	
+	private EntityRef<UserTable> _UserTable;
+	
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnInvoiceIDChanging(int value);
+    partial void OnInvoiceIDChanged();
+    partial void OnUserIDChanging(int value);
+    partial void OnUserIDChanged();
+    partial void OnPurchaseDateChanging(System.DateTime value);
+    partial void OnPurchaseDateChanged();
+    partial void OnTotalPriceChanging(decimal value);
+    partial void OnTotalPriceChanged();
+    #endregion
+	
+	public Invoice()
+	{
+		this._UserTable = default(EntityRef<UserTable>);
+		OnCreated();
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_InvoiceID", DbType="Int NOT NULL", IsPrimaryKey=true)]
+	public int InvoiceID
+	{
+		get
+		{
+			return this._InvoiceID;
+		}
+		set
+		{
+			if ((this._InvoiceID != value))
+			{
+				this.OnInvoiceIDChanging(value);
+				this.SendPropertyChanging();
+				this._InvoiceID = value;
+				this.SendPropertyChanged("InvoiceID");
+				this.OnInvoiceIDChanged();
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserID", DbType="Int NOT NULL")]
+	public int UserID
+	{
+		get
+		{
+			return this._UserID;
+		}
+		set
+		{
+			if ((this._UserID != value))
+			{
+				if (this._UserTable.HasLoadedOrAssignedValue)
+				{
+					throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+				}
+				this.OnUserIDChanging(value);
+				this.SendPropertyChanging();
+				this._UserID = value;
+				this.SendPropertyChanged("UserID");
+				this.OnUserIDChanged();
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PurchaseDate", DbType="DateTime NOT NULL")]
+	public System.DateTime PurchaseDate
+	{
+		get
+		{
+			return this._PurchaseDate;
+		}
+		set
+		{
+			if ((this._PurchaseDate != value))
+			{
+				this.OnPurchaseDateChanging(value);
+				this.SendPropertyChanging();
+				this._PurchaseDate = value;
+				this.SendPropertyChanged("PurchaseDate");
+				this.OnPurchaseDateChanged();
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TotalPrice", DbType="Decimal(6,2) NOT NULL")]
+	public decimal TotalPrice
+	{
+		get
+		{
+			return this._TotalPrice;
+		}
+		set
+		{
+			if ((this._TotalPrice != value))
+			{
+				this.OnTotalPriceChanging(value);
+				this.SendPropertyChanging();
+				this._TotalPrice = value;
+				this.SendPropertyChanged("TotalPrice");
+				this.OnTotalPriceChanged();
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.AssociationAttribute(Name="UserTable_Invoice", Storage="_UserTable", ThisKey="UserID", OtherKey="ID", IsForeignKey=true)]
+	public UserTable UserTable
+	{
+		get
+		{
+			return this._UserTable.Entity;
+		}
+		set
+		{
+			UserTable previousValue = this._UserTable.Entity;
+			if (((previousValue != value) 
+						|| (this._UserTable.HasLoadedOrAssignedValue == false)))
+			{
+				this.SendPropertyChanging();
+				if ((previousValue != null))
+				{
+					this._UserTable.Entity = null;
+					previousValue.Invoices.Remove(this);
+				}
+				this._UserTable.Entity = value;
+				if ((value != null))
+				{
+					value.Invoices.Add(this);
+					this._UserID = value.ID;
+				}
+				else
+				{
+					this._UserID = default(int);
+				}
+				this.SendPropertyChanged("UserTable");
+			}
+		}
+	}
+	
+	public event PropertyChangingEventHandler PropertyChanging;
+	
+	public event PropertyChangedEventHandler PropertyChanged;
+	
+	protected virtual void SendPropertyChanging()
+	{
+		if ((this.PropertyChanging != null))
+		{
+			this.PropertyChanging(this, emptyChangingEventArgs);
+		}
+	}
+	
+	protected virtual void SendPropertyChanged(String propertyName)
+	{
+		if ((this.PropertyChanged != null))
+		{
+			this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+	}
+}
+
+[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.ProdIDQtyBought")]
+public partial class ProdIDQtyBought
+{
+	
+	private int _InvoiceID;
+	
+	private int _ProductID;
+	
+	private int _QuantityBought;
+	
+	public ProdIDQtyBought()
+	{
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_InvoiceID", DbType="Int NOT NULL")]
+	public int InvoiceID
+	{
+		get
+		{
+			return this._InvoiceID;
+		}
+		set
+		{
+			if ((this._InvoiceID != value))
+			{
+				this._InvoiceID = value;
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ProductID", DbType="Int NOT NULL")]
+	public int ProductID
+	{
+		get
+		{
+			return this._ProductID;
+		}
+		set
+		{
+			if ((this._ProductID != value))
+			{
+				this._ProductID = value;
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_QuantityBought", DbType="Int NOT NULL")]
+	public int QuantityBought
+	{
+		get
+		{
+			return this._QuantityBought;
+		}
+		set
+		{
+			if ((this._QuantityBought != value))
+			{
+				this._QuantityBought = value;
+			}
 		}
 	}
 }
