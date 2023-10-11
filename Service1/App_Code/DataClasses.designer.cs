@@ -32,12 +32,12 @@ public partial class DataClassesDataContext : System.Data.Linq.DataContext
   partial void InsertUserTable(UserTable instance);
   partial void UpdateUserTable(UserTable instance);
   partial void DeleteUserTable(UserTable instance);
-  partial void InsertProduct(Product instance);
-  partial void UpdateProduct(Product instance);
-  partial void DeleteProduct(Product instance);
   partial void InsertInvoice(Invoice instance);
   partial void UpdateInvoice(Invoice instance);
   partial void DeleteInvoice(Invoice instance);
+  partial void InsertProduct(Product instance);
+  partial void UpdateProduct(Product instance);
+  partial void DeleteProduct(Product instance);
   #endregion
 	
 	public DataClassesDataContext() : 
@@ -78,14 +78,6 @@ public partial class DataClassesDataContext : System.Data.Linq.DataContext
 		}
 	}
 	
-	public System.Data.Linq.Table<Product> Products
-	{
-		get
-		{
-			return this.GetTable<Product>();
-		}
-	}
-	
 	public System.Data.Linq.Table<Invoice> Invoices
 	{
 		get
@@ -99,6 +91,14 @@ public partial class DataClassesDataContext : System.Data.Linq.DataContext
 		get
 		{
 			return this.GetTable<ProdIDQtyBought>();
+		}
+	}
+	
+	public System.Data.Linq.Table<Product> Products
+	{
+		get
+		{
+			return this.GetTable<Product>();
 		}
 	}
 }
@@ -361,212 +361,6 @@ public partial class UserTable : INotifyPropertyChanging, INotifyPropertyChanged
 	}
 }
 
-[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Product")]
-public partial class Product : INotifyPropertyChanging, INotifyPropertyChanged
-{
-	
-	private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-	
-	private int _Prod_Id;
-	
-	private string _Prod_Img_Path;
-	
-	private string _Prod_Name;
-	
-	private decimal _Prod_Price;
-	
-	private string _Prod_Description;
-	
-	private int _Prod_Qty;
-	
-	private int _Active;
-	
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnProd_IdChanging(int value);
-    partial void OnProd_IdChanged();
-    partial void OnProd_Img_PathChanging(string value);
-    partial void OnProd_Img_PathChanged();
-    partial void OnProd_NameChanging(string value);
-    partial void OnProd_NameChanged();
-    partial void OnProd_PriceChanging(decimal value);
-    partial void OnProd_PriceChanged();
-    partial void OnProd_DescriptionChanging(string value);
-    partial void OnProd_DescriptionChanged();
-    partial void OnProd_QtyChanging(int value);
-    partial void OnProd_QtyChanged();
-    partial void OnActiveChanging(int value);
-    partial void OnActiveChanged();
-    #endregion
-	
-	public Product()
-	{
-		OnCreated();
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-	public int Prod_Id
-	{
-		get
-		{
-			return this._Prod_Id;
-		}
-		set
-		{
-			if ((this._Prod_Id != value))
-			{
-				this.OnProd_IdChanging(value);
-				this.SendPropertyChanging();
-				this._Prod_Id = value;
-				this.SendPropertyChanged("Prod_Id");
-				this.OnProd_IdChanged();
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Img_Path", DbType="VarChar(255) NOT NULL", CanBeNull=false)]
-	public string Prod_Img_Path
-	{
-		get
-		{
-			return this._Prod_Img_Path;
-		}
-		set
-		{
-			if ((this._Prod_Img_Path != value))
-			{
-				this.OnProd_Img_PathChanging(value);
-				this.SendPropertyChanging();
-				this._Prod_Img_Path = value;
-				this.SendPropertyChanged("Prod_Img_Path");
-				this.OnProd_Img_PathChanged();
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Name", DbType="VarChar(255) NOT NULL", CanBeNull=false)]
-	public string Prod_Name
-	{
-		get
-		{
-			return this._Prod_Name;
-		}
-		set
-		{
-			if ((this._Prod_Name != value))
-			{
-				this.OnProd_NameChanging(value);
-				this.SendPropertyChanging();
-				this._Prod_Name = value;
-				this.SendPropertyChanged("Prod_Name");
-				this.OnProd_NameChanged();
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Price", DbType="Decimal(6,2) NOT NULL")]
-	public decimal Prod_Price
-	{
-		get
-		{
-			return this._Prod_Price;
-		}
-		set
-		{
-			if ((this._Prod_Price != value))
-			{
-				this.OnProd_PriceChanging(value);
-				this.SendPropertyChanging();
-				this._Prod_Price = value;
-				this.SendPropertyChanged("Prod_Price");
-				this.OnProd_PriceChanged();
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Description", DbType="VarChar(MAX) NOT NULL", CanBeNull=false)]
-	public string Prod_Description
-	{
-		get
-		{
-			return this._Prod_Description;
-		}
-		set
-		{
-			if ((this._Prod_Description != value))
-			{
-				this.OnProd_DescriptionChanging(value);
-				this.SendPropertyChanging();
-				this._Prod_Description = value;
-				this.SendPropertyChanged("Prod_Description");
-				this.OnProd_DescriptionChanged();
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Qty", DbType="Int NOT NULL")]
-	public int Prod_Qty
-	{
-		get
-		{
-			return this._Prod_Qty;
-		}
-		set
-		{
-			if ((this._Prod_Qty != value))
-			{
-				this.OnProd_QtyChanging(value);
-				this.SendPropertyChanging();
-				this._Prod_Qty = value;
-				this.SendPropertyChanged("Prod_Qty");
-				this.OnProd_QtyChanged();
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Active", DbType="Int NOT NULL")]
-	public int Active
-	{
-		get
-		{
-			return this._Active;
-		}
-		set
-		{
-			if ((this._Active != value))
-			{
-				this.OnActiveChanging(value);
-				this.SendPropertyChanging();
-				this._Active = value;
-				this.SendPropertyChanged("Active");
-				this.OnActiveChanged();
-			}
-		}
-	}
-	
-	public event PropertyChangingEventHandler PropertyChanging;
-	
-	public event PropertyChangedEventHandler PropertyChanged;
-	
-	protected virtual void SendPropertyChanging()
-	{
-		if ((this.PropertyChanging != null))
-		{
-			this.PropertyChanging(this, emptyChangingEventArgs);
-		}
-	}
-	
-	protected virtual void SendPropertyChanged(String propertyName)
-	{
-		if ((this.PropertyChanged != null))
-		{
-			this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-		}
-	}
-}
-
 [global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Invoice")]
 public partial class Invoice : INotifyPropertyChanging, INotifyPropertyChanged
 {
@@ -801,6 +595,236 @@ public partial class ProdIDQtyBought
 			{
 				this._QuantityBought = value;
 			}
+		}
+	}
+}
+
+[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Product")]
+public partial class Product : INotifyPropertyChanging, INotifyPropertyChanged
+{
+	
+	private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+	
+	private int _Prod_Id;
+	
+	private string _Prod_Img_Path;
+	
+	private string _Prod_Name;
+	
+	private decimal _Prod_Price;
+	
+	private string _Prod_Description;
+	
+	private int _Prod_Qty;
+	
+	private string _Prod_Category;
+	
+	private int _Active;
+	
+    #region Extensibility Method Definitions
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnProd_IdChanging(int value);
+    partial void OnProd_IdChanged();
+    partial void OnProd_Img_PathChanging(string value);
+    partial void OnProd_Img_PathChanged();
+    partial void OnProd_NameChanging(string value);
+    partial void OnProd_NameChanged();
+    partial void OnProd_PriceChanging(decimal value);
+    partial void OnProd_PriceChanged();
+    partial void OnProd_DescriptionChanging(string value);
+    partial void OnProd_DescriptionChanged();
+    partial void OnProd_QtyChanging(int value);
+    partial void OnProd_QtyChanged();
+    partial void OnProd_CategoryChanging(string value);
+    partial void OnProd_CategoryChanged();
+    partial void OnActiveChanging(int value);
+    partial void OnActiveChanged();
+    #endregion
+	
+	public Product()
+	{
+		OnCreated();
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+	public int Prod_Id
+	{
+		get
+		{
+			return this._Prod_Id;
+		}
+		set
+		{
+			if ((this._Prod_Id != value))
+			{
+				this.OnProd_IdChanging(value);
+				this.SendPropertyChanging();
+				this._Prod_Id = value;
+				this.SendPropertyChanged("Prod_Id");
+				this.OnProd_IdChanged();
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Img_Path", DbType="VarChar(255) NOT NULL", CanBeNull=false)]
+	public string Prod_Img_Path
+	{
+		get
+		{
+			return this._Prod_Img_Path;
+		}
+		set
+		{
+			if ((this._Prod_Img_Path != value))
+			{
+				this.OnProd_Img_PathChanging(value);
+				this.SendPropertyChanging();
+				this._Prod_Img_Path = value;
+				this.SendPropertyChanged("Prod_Img_Path");
+				this.OnProd_Img_PathChanged();
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Name", DbType="VarChar(255) NOT NULL", CanBeNull=false)]
+	public string Prod_Name
+	{
+		get
+		{
+			return this._Prod_Name;
+		}
+		set
+		{
+			if ((this._Prod_Name != value))
+			{
+				this.OnProd_NameChanging(value);
+				this.SendPropertyChanging();
+				this._Prod_Name = value;
+				this.SendPropertyChanged("Prod_Name");
+				this.OnProd_NameChanged();
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Price", DbType="Decimal(6,2) NOT NULL")]
+	public decimal Prod_Price
+	{
+		get
+		{
+			return this._Prod_Price;
+		}
+		set
+		{
+			if ((this._Prod_Price != value))
+			{
+				this.OnProd_PriceChanging(value);
+				this.SendPropertyChanging();
+				this._Prod_Price = value;
+				this.SendPropertyChanged("Prod_Price");
+				this.OnProd_PriceChanged();
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Description", DbType="VarChar(MAX) NOT NULL", CanBeNull=false)]
+	public string Prod_Description
+	{
+		get
+		{
+			return this._Prod_Description;
+		}
+		set
+		{
+			if ((this._Prod_Description != value))
+			{
+				this.OnProd_DescriptionChanging(value);
+				this.SendPropertyChanging();
+				this._Prod_Description = value;
+				this.SendPropertyChanged("Prod_Description");
+				this.OnProd_DescriptionChanged();
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Qty", DbType="Int NOT NULL")]
+	public int Prod_Qty
+	{
+		get
+		{
+			return this._Prod_Qty;
+		}
+		set
+		{
+			if ((this._Prod_Qty != value))
+			{
+				this.OnProd_QtyChanging(value);
+				this.SendPropertyChanging();
+				this._Prod_Qty = value;
+				this.SendPropertyChanged("Prod_Qty");
+				this.OnProd_QtyChanged();
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Prod_Category", DbType="VarChar(255)")]
+	public string Prod_Category
+	{
+		get
+		{
+			return this._Prod_Category;
+		}
+		set
+		{
+			if ((this._Prod_Category != value))
+			{
+				this.OnProd_CategoryChanging(value);
+				this.SendPropertyChanging();
+				this._Prod_Category = value;
+				this.SendPropertyChanged("Prod_Category");
+				this.OnProd_CategoryChanged();
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Active", DbType="Int NOT NULL")]
+	public int Active
+	{
+		get
+		{
+			return this._Active;
+		}
+		set
+		{
+			if ((this._Active != value))
+			{
+				this.OnActiveChanging(value);
+				this.SendPropertyChanging();
+				this._Active = value;
+				this.SendPropertyChanged("Active");
+				this.OnActiveChanged();
+			}
+		}
+	}
+	
+	public event PropertyChangingEventHandler PropertyChanging;
+	
+	public event PropertyChangedEventHandler PropertyChanged;
+	
+	protected virtual void SendPropertyChanging()
+	{
+		if ((this.PropertyChanging != null))
+		{
+			this.PropertyChanging(this, emptyChangingEventArgs);
+		}
+	}
+	
+	protected virtual void SendPropertyChanged(String propertyName)
+	{
+		if ((this.PropertyChanged != null))
+		{
+			this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

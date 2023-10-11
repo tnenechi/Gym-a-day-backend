@@ -13,18 +13,6 @@
       <Association Name="UserTable_Invoice" Member="Invoices" ThisKey="ID" OtherKey="UserID" Type="Invoice" />
     </Type>
   </Table>
-  <Table Name="dbo.Product" Member="Products">
-    <Type Name="Product">
-      <Column Name="Prod_Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="Prod_Img_Path" Type="System.String" DbType="VarChar(255) NOT NULL" CanBeNull="false" />
-      <Column Name="Prod_Name" Type="System.String" DbType="VarChar(255) NOT NULL" CanBeNull="false" />
-      <Column Name="Prod_Price" Type="System.Decimal" DbType="Decimal(6,2) NOT NULL" CanBeNull="false" />
-      <Column Name="Prod_Description" Type="System.String" DbType="VarChar(MAX) NOT NULL" CanBeNull="false" />
-      <Column Name="Prod_Qty" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="Active" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Association Name="Product_ProdIDQtyBought" Member="ProdIDQtyBoughts" ThisKey="Prod_Id" OtherKey="ProductID" Type="ProdIDQtyBought" />
-    </Type>
-  </Table>
   <Table Name="dbo.Invoice" Member="Invoices">
     <Type Name="Invoice">
       <Column Name="InvoiceID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
@@ -42,6 +30,19 @@
       <Column Name="QuantityBought" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Association Name="Invoice_ProdIDQtyBought" Member="Invoice" ThisKey="InvoiceID" OtherKey="InvoiceID" Type="Invoice" IsForeignKey="true" />
       <Association Name="Product_ProdIDQtyBought" Member="Product" ThisKey="ProductID" OtherKey="Prod_Id" Type="Product" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Product" Member="Products">
+    <Type Name="Product">
+      <Column Name="Prod_Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Prod_Img_Path" Type="System.String" DbType="VarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="Prod_Name" Type="System.String" DbType="VarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="Prod_Price" Type="System.Decimal" DbType="Decimal(6,2) NOT NULL" CanBeNull="false" />
+      <Column Name="Prod_Description" Type="System.String" DbType="VarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="Prod_Qty" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Prod_Category" Type="System.String" DbType="VarChar(255)" CanBeNull="true" />
+      <Column Name="Active" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="Product_ProdIDQtyBought" Member="ProdIDQtyBoughts" ThisKey="Prod_Id" OtherKey="ProductID" Type="ProdIDQtyBought" />
     </Type>
   </Table>
 </Database>

@@ -130,7 +130,7 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
 
 
         //PRODUCT ADDITION FUNCTION
-        public bool AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription, int quantity)
+        public bool AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription, int quantity, string category)
         {
             var aNewProduct = new Product
             {
@@ -139,6 +139,7 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
                 Prod_Price = decimal.Parse(prodPrice),
                 Prod_Description = prodDescription,
                 Prod_Qty = quantity,
+                Prod_Category = category,
                 Active = 1
             };
 
@@ -164,15 +165,16 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
 
 
         //EDIT PRODUCT Fucntion - returns 1 if successfull, 0 if product ID does not exist, -1 if an error occured
-        public int EditProduct(int ID, string prodName, string prodPrice, String prodDescription, int quantity)
+        public int EditProduct(int ID, string prodName, string prodPrice, String prodDescription, int quantity, string category)
         {
             var theProduct = GetAProduct(ID);
 
             if(theProduct != null)
             {
                 theProduct.Prod_Name = prodName;
-                theProduct.Prod_Name = prodPrice;
+                theProduct.Prod_Price = Convert.ToDecimal(prodPrice);
                 theProduct.Prod_Description = prodDescription;
+                theProduct.Prod_Category = category;
                 theProduct.Prod_Qty = quantity;
 
                 try
@@ -265,7 +267,9 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
         //Method to return all from the product table
         public List<Product> GetProducts()
     {
-            dynamic allProducts = (from s in db.Products select s);
+            dynamic allProducts = (from s in db.Products 
+                                   where (s.Active == 1)
+                                   select s);
 
             List<Product> listToReturn = new List<Product>();
 
@@ -287,7 +291,7 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
 
             return listToReturn;
 
-    }
+        }
 
 
         //Method to get a specific product
@@ -307,9 +311,11 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
     //Method to add to the invoice table
     public bool CreateInvoice(int userId, Dictionary<int, int> prodIdQty, decimal totalAmountSpent, DateTime purchaseDate)
     {
+        int invoiceId = invoiceNum++;
+
         var anInvoice = new Invoice
         {
-            InvoiceID = ++invoiceNum,
+            InvoiceID = invoiceId,
             UserID = userId,
             PurchaseDate = purchaseDate,
             TotalPrice = totalAmountSpent
@@ -369,6 +375,151 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
 
         return listToReturn;
     }
+
+
+
+    public List<Product> GetProductsByCategory(string productCategory)
+    {
+        dynamic allProducts = GetProducts();
+        List<Product> toReturn = new List<Product>();
+
+        foreach (Product aProduct in allProducts)
+        {
+            if ((aProduct.Prod_Category).Equals(productCategory))
+            {
+                var toAdd = new Product
+                {
+                    Prod_Id = aProduct.Prod_Id,
+                    Prod_Img_Path = aProduct.Prod_Img_Path,
+                    Prod_Name = aProduct.Prod_Name,
+                    Prod_Price = aProduct.Prod_Price
+                };
+
+                toReturn.Add(toAdd);
+            }
+        }
+
+        return toReturn;
+    }
+
+
+
+    public List<Product> GetProductByPriceAsc()
+    {
+        dynamic sortedProducts = (from p in db.Products
+                                  where (p.Active == 1)
+                                  orderby p.Prod_Price ascending
+                                  select p);
+
+        List<Product> toReturn = new List<Product>();
+
+        foreach (Product aProduct in sortedProducts)
+        {
+            var toAdd = new Product
+            {
+                Prod_Id = aProduct.Prod_Id,
+                Prod_Img_Path = aProduct.Prod_Img_Path,
+                Prod_Name = aProduct.Prod_Name,
+                Prod_Price = aProduct.Prod_Price
+            };
+
+            toReturn.Add(toAdd);
+        }
+
+        return toReturn;
+
+
+    }
+
+    public List<Product> GetProductByPriceDsc()
+    {
+        dynamic sortedProducts = (from p in db.Products
+                                  where (p.Active == 1)
+                                  orderby p.Prod_Price descending
+                                  select p);
+
+        List<Product> toReturn = new List<Product>();
+
+        foreach (Product aProduct in sortedProducts)
+        {
+            var toAdd = new Product
+            {
+                Prod_Id = aProduct.Prod_Id,
+                Prod_Img_Path = aProduct.Prod_Img_Path,
+                Prod_Name = aProduct.Prod_Name,
+                Prod_Price = aProduct.Prod_Price
+            };
+
+            toReturn.Add(toAdd);
+        }
+
+        return toReturn;
+    }
+
+    public List<Product> GetProductByNameAsc()
+    {
+        dynamic sortedProducts = (from p in db.Products
+                                  where (p.Active == 1)
+                                  orderby p.Prod_Name ascending
+                                  select p);
+
+        List<Product> toReturn = new List<Product>();
+
+        foreach (Product aProduct in sortedProducts)
+        {
+            var toAdd = new Product
+            {
+                Prod_Id = aProduct.Prod_Id,
+                Prod_Img_Path = aProduct.Prod_Img_Path,
+                Prod_Name = aProduct.Prod_Name,
+                Prod_Price = aProduct.Prod_Price
+            };
+
+            toReturn.Add(toAdd);
+        }
+
+        return toReturn;
+    }
+
+    public List<Product> GetProductByNameDsc()
+    {
+        dynamic sortedProducts = (from p in db.Products
+                                  where (p.Active == 1)
+                                  orderby p.Prod_Name descending
+                                  select p);
+
+        List<Product> toReturn = new List<Product>();
+
+        foreach (Product aProduct in sortedProducts)
+        {
+            var toAdd = new Product
+            {
+                Prod_Id = aProduct.Prod_Id,
+                Prod_Img_Path = aProduct.Prod_Img_Path,
+                Prod_Name = aProduct.Prod_Name,
+                Prod_Price = aProduct.Prod_Price
+            };
+
+            toReturn.Add(toAdd);
+        }
+
+        return toReturn;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     //***** HELPER METHODS BELOW ******
@@ -464,6 +615,7 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
             return false;
         }
 
+    
 }
 
 

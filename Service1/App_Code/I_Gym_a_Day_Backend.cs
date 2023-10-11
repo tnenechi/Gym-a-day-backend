@@ -23,10 +23,10 @@ using System.Text;
         string GetUserFirstname(int ID);
 
         [OperationContract]
-        bool AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription, int quantity);
+        bool AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription, int quantity, string category);
 
         [OperationContract]
-        int EditProduct(int ID, string prodName, string prodPrice, String prodDescription, int quantity);
+        int EditProduct(int ID, string prodName, string prodPrice, String prodDescription, int quantity, string category);
 
         [OperationContract]
         bool DecreaseProductQty(int ID, int quantityBought);
@@ -49,7 +49,23 @@ using System.Text;
         [OperationContract]
         List<Object> GetInvoices(int userId);
 
+        [OperationContract]
+        List<Product> GetProductsByCategory(string productCategory);
 
+        [OperationContract]
+        List<Product> GetProductByPriceAsc();
+
+
+        [OperationContract]
+        List<Product> GetProductByPriceDsc();
+
+
+        [OperationContract]
+        List<Product> GetProductByNameAsc();
+
+
+        [OperationContract]
+        List<Product> GetProductByNameDsc();
 
     }
 
