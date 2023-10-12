@@ -23,6 +23,10 @@ using System.Text;
         string GetUserFirstname(int ID);
 
         [OperationContract]
+        List<UserTable> GetUsers();
+
+
+        [OperationContract]
         bool AddProduct(string imgPath, string prodName, string prodPrice, String prodDescription, int quantity, string category);
 
         [OperationContract]
@@ -44,30 +48,39 @@ using System.Text;
         Product GetAProduct(int id);
 
         [OperationContract]
-        bool CreateInvoice(int userId, Dictionary<int, int> prodIdQty, decimal totalAmountSpent, DateTime purchaseDate);
+        bool CreateInvoice(int prodId, int userId, int prodQty, decimal totalAmountSpent, DateTime purchaseDate);
 
         [OperationContract]
-        List<Object> GetInvoices(int userId);
+        List<Invoice> GetInvoices(int userId);
 
         [OperationContract]
         List<Product> GetProductsByCategory(string productCategory);
 
         [OperationContract]
-        List<Product> GetProductByPriceAsc();
+        List<Product> GetUnavailableProducts();
 
 
-        [OperationContract]
-        List<Product> GetProductByPriceDsc();
 
 
-        [OperationContract]
-        List<Product> GetProductByNameAsc();
-
+    [OperationContract]
+        int Booking(string userName, string userSurname, string userEmail, string userPhoneNo, string branch, string date, string time, string sess);
 
         [OperationContract]
-        List<Product> GetProductByNameDsc();
+        bool BookingExists(string userEmail);
 
-    }
+        [OperationContract]
+        Booking GetBooking(string email);
+
+        [OperationContract]
+        bool DeleteBooking(string email);
+
+    [OperationContract]
+    bool EditBooking(string userName, string userSurname, string userEmail, string userPhoneNo, string branch, string date, string time, string sess);
+
+
+
+
+}
 
 
 

@@ -126,7 +126,25 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
             }
         }
 
+    public List<UserTable> GetUsers()
+    {
+        dynamic allUsers = from u in db.UserTables
+                           select u;
+        List<UserTable> toReturn = new List<UserTable>();
+        foreach (UserTable aUser in allUsers)
+        {
+            var userToAdd = new UserTable
+            {
+                U_Name = aUser.U_Name,
+                U_Surname = aUser.U_Surname,
+                ID = aUser.ID,
+                Type = aUser.Type
+            };
 
+            toReturn.Add(userToAdd);
+        }
+            return toReturn;
+    }
 
 
         //PRODUCT ADDITION FUNCTION
@@ -169,28 +187,29 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
         {
             var theProduct = GetAProduct(ID);
 
-            if(theProduct != null)
-            {
-                theProduct.Prod_Name = prodName;
-                theProduct.Prod_Price = Convert.ToDecimal(prodPrice);
-                theProduct.Prod_Description = prodDescription;
-                theProduct.Prod_Category = category;
-                theProduct.Prod_Qty = quantity;
 
-                try
-                {
-                    db.SubmitChanges();
-                    return 1;
-                }catch(Exception e)
-                {
-                    e.GetBaseException();
-                    return -1;
-                }
-            }
-            else
+            theProduct.Prod_Name = prodName;
+            theProduct.Prod_Price = Convert.ToDecimal(prodPrice);
+            theProduct.Prod_Description = prodDescription;
+            theProduct.Prod_Category = category;
+            theProduct.Prod_Qty = quantity;
+
+            try
             {
-                return 0;
+                db.SubmitChanges();
+
             }
+            catch (Exception e)
+            {
+                e.GetBaseException();
+                return -1;
+            }
+
+
+            return 1;
+
+
+        
         }
 
 
@@ -239,29 +258,22 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
 
         //DELETE PRODUCT Fucntion - returns 1 if successfull, 0 if product ID does not exist, -1 if an error occured
     public int DeleteProduct(int ID)
-           {
+    {
                 var theProduct = GetAProduct(ID);
 
-                if (theProduct != null)
-                {
-                    theProduct.Active = 0;
+        theProduct.Active = 0;
 
-                    try
-                    {
-                        db.SubmitChanges();
-                        return 1;
-                    }
-                    catch (Exception e)
-                    {
-                        e.GetBaseException();
-                        return -1;
-                    }
-                }
-                else
-                {
-                    return 0;
-                }
+        try
+        {
+            db.SubmitChanges();
+            return 1;
         }
+        catch (Exception e)
+        {
+            e.GetBaseException();
+            return -1;
+        }
+    }
 
 
         //Method to return all from the product table
@@ -282,7 +294,9 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
                         Prod_Id = aProduct.Prod_Id,
                         Prod_Img_Path = aProduct.Prod_Img_Path,
                         Prod_Name = aProduct.Prod_Name,
-                        Prod_Price = aProduct.Prod_Price
+                        Prod_Price = aProduct.Prod_Price,
+                        Prod_Category = aProduct.Prod_Category,
+                        Prod_Qty = aProduct.Prod_Qty
                     };
 
                     listToReturn.Add(toAdd);
@@ -294,31 +308,80 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
         }
 
 
+
+    public List<Product> GetUnavailableProducts()
+    {
+        dynamic allProducts = (from s in db.Products
+                               where (s.Active == 0)
+                               select s);
+
+        List<Product> listToReturn = new List<Product>();
+
+        if (allProducts != null)
+        {
+            foreach (Product aProduct in allProducts)
+            {
+                var toAdd = new Product
+                {
+                    Prod_Id = aProduct.Prod_Id,
+                    Prod_Img_Path = aProduct.Prod_Img_Path,
+                    Prod_Name = aProduct.Prod_Name,
+                    Prod_Price = aProduct.Prod_Price,
+                    Prod_Category = aProduct.Prod_Category
+                };
+
+                listToReturn.Add(toAdd);
+            }
+        }
+
+        return listToReturn;
+    }
+
+
         //Method to get a specific product
-        public Product GetAProduct(int id)
+    public Product GetAProduct(int id)
         {
             var AProduct = (from p in db.Products
                             where (p.Prod_Id.Equals(id)) && (p.Active == 1)
                             select p).FirstOrDefault();
 
-            return AProduct;
-        }
+
+
+        var toReturn = new Product
+        {
+            Prod_Name = AProduct.Prod_Name,
+            Prod_Img_Path = AProduct.Prod_Img_Path,
+            Prod_Price = AProduct.Prod_Price,
+            Prod_Category = AProduct.Prod_Category,
+            Prod_Qty = AProduct.Prod_Qty,
+            Prod_Id = AProduct.Prod_Id,
+            Active  = AProduct.Active,
+            Prod_Description = AProduct.Prod_Description
+
+        };
+
+
+            return toReturn;
+    }
 
 
 
 
 
     //Method to add to the invoice table
-    public bool CreateInvoice(int userId, Dictionary<int, int> prodIdQty, decimal totalAmountSpent, DateTime purchaseDate)
+    public bool CreateInvoice(int prodId, int userId, int prodQty, decimal totalAmountSpent, DateTime purchaseDate)
     {
-        int invoiceId = invoiceNum++;
+        var productPurchased = GetAProduct(prodId);
+        productPurchased.Prod_Qty -= prodQty;
 
         var anInvoice = new Invoice
         {
-            InvoiceID = invoiceId,
+            ProdID = prodId,
             UserID = userId,
-            PurchaseDate = purchaseDate,
-            TotalPrice = totalAmountSpent
+            ProdQty = prodQty,
+            TotalPrice = totalAmountSpent,
+            PurchaseDate = purchaseDate
+            
         };
 
        
@@ -328,49 +391,43 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
         try
         {
             db.SubmitChanges();
-
-
-            //create the prodIDQtyBought Table for this invoice
-
-            bool isCreated = CreateProdIdQty(anInvoice.InvoiceID, prodIdQty);
-
-
-            return isCreated;
+           return true;
         }
         catch (Exception e)
         {
+            
             e.GetBaseException();
             return false;
         }
+
+
+
     }
 
 
 
-    public List<Object> GetInvoices(int userID)
+    public List<Invoice> GetInvoices(int userID)
     {
         dynamic userInvoices = (from i in db.Invoices
                                where (i.UserID == userID)
                                select i).DefaultIfEmpty();
 
-        List<Object> listToReturn = new List<Object>();
+        List<Invoice> listToReturn = new List<Invoice>();
 
-        Dictionary<int, int> prodIDQty = new Dictionary<int, int>();
+     
 
         foreach(Invoice anInvoice in userInvoices)
         {
-            //get every product-quantity pair in that particular invoice
-            int invoiceId = anInvoice.InvoiceID;
-            prodIDQty = GetInvoiceProductQty(invoiceId);
-
-            var toReturn = new
+            var toAdd = new Invoice
             {
-                InvoiceId = invoiceId,
-                DOP = anInvoice.PurchaseDate,
-                TotalPrice = anInvoice.TotalPrice,
-                productsQty = prodIDQty
+                ProdID = anInvoice.ProdID,
+                ProdQty = anInvoice.ProdQty,
+                PurchaseDate = anInvoice.PurchaseDate,
+                TotalPrice = anInvoice.TotalPrice
             };
 
-            listToReturn.Add(toReturn);
+            listToReturn.Add(toAdd);
+     
         }
 
         return listToReturn;
@@ -404,107 +461,7 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
 
 
 
-    public List<Product> GetProductByPriceAsc()
-    {
-        dynamic sortedProducts = (from p in db.Products
-                                  where (p.Active == 1)
-                                  orderby p.Prod_Price ascending
-                                  select p);
-
-        List<Product> toReturn = new List<Product>();
-
-        foreach (Product aProduct in sortedProducts)
-        {
-            var toAdd = new Product
-            {
-                Prod_Id = aProduct.Prod_Id,
-                Prod_Img_Path = aProduct.Prod_Img_Path,
-                Prod_Name = aProduct.Prod_Name,
-                Prod_Price = aProduct.Prod_Price
-            };
-
-            toReturn.Add(toAdd);
-        }
-
-        return toReturn;
-
-
-    }
-
-    public List<Product> GetProductByPriceDsc()
-    {
-        dynamic sortedProducts = (from p in db.Products
-                                  where (p.Active == 1)
-                                  orderby p.Prod_Price descending
-                                  select p);
-
-        List<Product> toReturn = new List<Product>();
-
-        foreach (Product aProduct in sortedProducts)
-        {
-            var toAdd = new Product
-            {
-                Prod_Id = aProduct.Prod_Id,
-                Prod_Img_Path = aProduct.Prod_Img_Path,
-                Prod_Name = aProduct.Prod_Name,
-                Prod_Price = aProduct.Prod_Price
-            };
-
-            toReturn.Add(toAdd);
-        }
-
-        return toReturn;
-    }
-
-    public List<Product> GetProductByNameAsc()
-    {
-        dynamic sortedProducts = (from p in db.Products
-                                  where (p.Active == 1)
-                                  orderby p.Prod_Name ascending
-                                  select p);
-
-        List<Product> toReturn = new List<Product>();
-
-        foreach (Product aProduct in sortedProducts)
-        {
-            var toAdd = new Product
-            {
-                Prod_Id = aProduct.Prod_Id,
-                Prod_Img_Path = aProduct.Prod_Img_Path,
-                Prod_Name = aProduct.Prod_Name,
-                Prod_Price = aProduct.Prod_Price
-            };
-
-            toReturn.Add(toAdd);
-        }
-
-        return toReturn;
-    }
-
-    public List<Product> GetProductByNameDsc()
-    {
-        dynamic sortedProducts = (from p in db.Products
-                                  where (p.Active == 1)
-                                  orderby p.Prod_Name descending
-                                  select p);
-
-        List<Product> toReturn = new List<Product>();
-
-        foreach (Product aProduct in sortedProducts)
-        {
-            var toAdd = new Product
-            {
-                Prod_Id = aProduct.Prod_Id,
-                Prod_Img_Path = aProduct.Prod_Img_Path,
-                Prod_Name = aProduct.Prod_Name,
-                Prod_Price = aProduct.Prod_Price
-            };
-
-            toReturn.Add(toAdd);
-        }
-
-        return toReturn;
-    }
+   
 
 
 
@@ -523,53 +480,7 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
 
 
     //***** HELPER METHODS BELOW ******
-    private Dictionary<int, int > GetInvoiceProductQty(int invoiceId)
-    {
-        Dictionary<int, int> toReturn = new Dictionary<int, int>();
-        dynamic rows = (from p in db.ProdIDQtyBoughts
-                           where (p.InvoiceID == invoiceId)
-                           select p).DefaultIfEmpty();
-
-        if(rows != null)
-        {
-            foreach (ProdIDQtyBought aRow in rows)
-            {
-                toReturn.Add(aRow.ProductID, aRow.QuantityBought);
-            }
-            return toReturn;
-        }
-        else
-        {
-            return null;
-        }
-    }
     
-    private bool CreateProdIdQty(int invoiceId, Dictionary<int, int> idQtyDictionary)
-    {
-        foreach(KeyValuePair<int, int> anEntry in idQtyDictionary)
-        {
-            var aPurchase = new ProdIDQtyBought
-            {
-                InvoiceID = invoiceId,
-                ProductID = anEntry.Key,
-                QuantityBought = anEntry.Value
-            };
-
-            db.ProdIDQtyBoughts.InsertOnSubmit(aPurchase);
-
-            try
-            {
-                db.SubmitChanges();
-                return true;
-            }
-            catch(Exception e)
-            {
-                e.GetBaseException();
-            }
-        }
-
-        return false;
-    }
 
 
 
@@ -615,7 +526,156 @@ public class Gym_a_Day_Backend : I_Gym_a_Day_Backend
             return false;
         }
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public bool BookingExists(string userEmail)
+    {
+
+        var book = (from s in db.Bookings
+                    where s.Email.Equals(userEmail)
+                    select s).FirstOrDefault();
+
+        if (book != null)
+        {
+            //then the email already exists in the db
+            return true;
+        }
+
+        return false;
+    }
+
+    public int Booking(string userName, string userSurname, string userEmail, string userPhoneNo, string branch, string date, string time, string ses)
+    {  //Check if email already exists in the db
+        if (!BookingExists(userEmail))
+        {
+            //if email does NOT exist create new Booking
+
+            var newBook = new Booking
+            {
+                U_Name = userName,
+                U_Surname = userSurname,
+                Email = userEmail,
+                Phone = userPhoneNo,
+                Branch = branch,
+                Date = date,
+                Time = time,
+                Session = ses,
+                Active = 1
+            };
+            db.Bookings.InsertOnSubmit(newBook);
+
+            try
+            {
+                db.SubmitChanges();
+                //successful Booked 
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                ex.GetBaseException();
+                //Exception occured
+                return -1;
+            }
+
+        }
+        else
+        {
+            //booking already exists
+            return 0;
+        }
+
+    }
+
+    public Booking GetBooking(string email)
+    {
+
+        var toReturn = (from p in db.Bookings
+                        where (p.Email == email) && (p.Active == 1)
+                        select p).FirstOrDefault();
+        if (toReturn != null)
+        {
+            return toReturn;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public bool DeleteBooking(string email)
+    {
+        var aBooking = GetBooking(email);
+
+        if (aBooking != null)
+        {
+
+            aBooking.Active = 0;
+
+            try
+            {
+                db.SubmitChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                e.GetBaseException();
+            }
+        }
+
+        return false;
+
+    }
+
+    public bool EditBooking(string userName, string userSurname, string userEmail, string userPhoneNo, string branch, string date, string time, string sess)
+    {
+        var aBooking = GetBooking(userEmail);
+
+
+        if (aBooking != null)
+        {
+            aBooking.U_Name = userName;
+            aBooking.U_Surname = userSurname;
+            aBooking.Email = userEmail;
+            aBooking.Phone = userPhoneNo;
+            aBooking.Branch = branch;
+            aBooking.Date = date;
+            aBooking.Time = userEmail;
+            aBooking.Session = sess;
+            aBooking.Active = 1;
+
+            try
+            {
+                db.SubmitChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                e.GetBaseException();
+            }
+        }
+
+
+        return false;
+    }
+
+
+
+
+
+
 }
 
 
